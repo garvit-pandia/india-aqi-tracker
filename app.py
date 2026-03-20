@@ -142,28 +142,48 @@ def main():
     r1_col1, r1_col2 = st.columns(2)
 
     # Seasonal Heatmap
-    heatmap_data = filtered_df.groupby(['Year', 'Month'])['AQI'].mean().reset_index()
+    month_names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    heatmap_data = filtered_df.dropna(subset=['AQI']).groupby(['Year', 'Month'])['AQI'].mean().reset_index()
     if not heatmap_data.empty:
         heatmap_pivot = heatmap_data.pivot(index="Year", columns="Month", values="AQI")
-        fig_heatmap = px.imshow(heatmap_pivot, color_continuous_scale=["#00B050", "#FFC000", "#FF0000"], 
-                                labels=dict(x="Month", y="Year", color="Avg AQI"),
-                                title=f"Seasonal AQI Heatmap - {selected_city}")
+        # Ensure all 12 months exist as columns
+        for m in range(1, 13):
+            if m not in heatmap_pivot.columns:
+                heatmap_pivot[m] = np.nan
+        heatmap_pivot = heatmap_pivot[sorted(heatmap_pivot.columns)]
+
+        y_labels = [str(int(y)) for y in heatmap_pivot.index]
+        x_labels = [month_names[m-1] for m in heatmap_pivot.columns]
+
+        fig_heatmap = go.Figure(data=go.Heatmap(
+            z=heatmap_pivot.values,
+            x=x_labels,
+            y=y_labels,
+            colorscale=[[0, "#00B050"], [0.5, "#FFC000"], [1, "#FF0000"]],
+            colorbar=dict(title="Avg AQI"),
+            hoverongaps=False
+        ))
         fig_heatmap.update_layout(
-            xaxis=dict(tickmode='array', tickvals=list(range(1,13)), ticktext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']),
-            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'), title_font=dict(size=20)
+            title=f"Seasonal AQI Heatmap - {selected_city}",
+            xaxis_title="Month", yaxis_title="Year",
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#e2e8f0', family='Outfit'), title_font=dict(size=20),
+            yaxis=dict(type='category')
         )
         r1_col1.plotly_chart(fig_heatmap, use_container_width=True)
         r1_col1.markdown("<div style='text-align:center; color:#a0aec0; font-size:0.9rem;'>Nov-Dec spike caused by crop stubble burning and cold air trapping pollutants near ground level</div>", unsafe_allow_html=True)
 
     # Yearly average line chart
-    yearly_data = filtered_df.groupby('Year')['AQI'].mean().reset_index()
+    yearly_data = filtered_df.dropna(subset=['AQI']).groupby('Year')['AQI'].mean().reset_index()
     if not yearly_data.empty:
+        yearly_data['Year_str'] = yearly_data['Year'].astype(str)
         fig_line = go.Figure()
-        fig_line.add_trace(go.Scatter(x=yearly_data['Year'], y=yearly_data['AQI'], mode='lines+markers',
+        fig_line.add_trace(go.Scatter(x=yearly_data['Year_str'], y=yearly_data['AQI'], mode='lines+markers',
                                       line=dict(color='#00f2fe', width=4), marker=dict(size=10, color='#4facfe'), name='AQI'))
         fig_line.update_layout(title=f"Yearly Average AQI - {selected_city}", 
                                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'),
-                               xaxis=dict(showgrid=False), yaxis=dict(gridcolor='rgba(255,255,255,0.1)'), title_font=dict(size=20))
+                               xaxis=dict(showgrid=False, type='category', title='Year'),
+                               yaxis=dict(gridcolor='rgba(255,255,255,0.1)', title='AQI'), title_font=dict(size=20))
         r1_col2.plotly_chart(fig_line, use_container_width=True)
 
     # Row 2 Charts
