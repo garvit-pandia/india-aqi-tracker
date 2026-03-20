@@ -15,6 +15,16 @@ An interactive Streamlit data science dashboard for tracking and analyzing the A
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Hugging_Face-FFD21E?style=for-the-badge&logo=huggingface)](https://huggingface.co/spaces/garvitpandia28/india-aqi-tracker)
 
+## 🖼️ Demo Screenshots
+
+| Dashboard Overview | Heatmap & Yearly Trends |
+|---|---|
+| ![Dashboard Overview](demo/dashboard_overview.png) | ![Heatmap & Yearly](demo/heatmap_and_yearly.png) |
+
+| City Comparison & Pollutant Analysis | AQI Distribution & Footer |
+|---|---|
+| ![City Comparison](demo/city_comparison_pollutant.png) | ![Donut Chart](demo/donut_chart_footer.png) |
+
 ## 📊 What It Shows
 * **Historical Air Quality Trends**: Visualize yearly and daily AQI shifts from 2015 to 2020.
 * **Pollutant Breakdowns**: Track specific pollutants like PM2.5, PM10, NO2, SO2, CO, and O3 over time.
