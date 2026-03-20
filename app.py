@@ -96,6 +96,19 @@ def main():
         df['Month'] = df['Date'].dt.month
         df['Month_Name'] = df['Date'].dt.strftime('%b')
         df['YearMonth'] = df['Date'].dt.to_period('M').astype(str)
+        
+        # Calculate/Fix AQI_Bucket based on custom logic requirements if missing or inconsistent
+        def get_bucket(v):
+            if pd.isna(v): return "N/A"
+            if v <= 50: return "Good"
+            if v <= 100: return "Satisfactory"
+            if v <= 200: return "Moderate"
+            if v <= 300: return "Poor"
+            if v <= 400: return "Very Poor"
+            return "Severe"
+            
+        # Prioritize filling NA buckets if AQI exists
+        df['AQI_Bucket'] = df.apply(lambda row: get_bucket(row['AQI']) if pd.isna(row['AQI_Bucket']) or row['AQI_Bucket'] == "N/A" else row['AQI_Bucket'], axis=1)
         return df
 
     df = load_data()
@@ -129,13 +142,19 @@ def main():
     worst_aqi = filtered_df['AQI'].max()
     best_aqi = filtered_df['AQI'].min()
     
-    monthly_avg = filtered_df.groupby('YearMonth')['AQI'].mean()
-    worst_month = monthly_avg.idxmax() if len(monthly_avg) > 0 else "N/A"
+    # Calculate worst month gracefully
+    monthly_avg = filtered_df.dropna(subset=['AQI']).groupby(['Year', 'Month', 'Month_Name'])['AQI'].mean().reset_index()
+    if not monthly_avg.empty:
+        worst_idx = monthly_avg['AQI'].idxmax()
+        worst_row = monthly_avg.loc[worst_idx]
+        worst_month_display = f"{worst_row['Month_Name']} {int(worst_row['Year'])}"
+    else:
+        worst_month_display = "N/A"
 
     col1.metric("Avg AQI", f"{avg_aqi:.1f}" if pd.notna(avg_aqi) else "N/A")
     col2.metric("Worst AQI", f"{worst_aqi:.1f}" if pd.notna(worst_aqi) else "N/A")
     col3.metric("Best AQI", f"{best_aqi:.1f}" if pd.notna(best_aqi) else "N/A")
-    col4.metric("Worst Month", worst_month)
+    col4.metric("Worst Month", worst_month_display)
 
     # Row 1 Charts
     st.markdown("<br>", unsafe_allow_html=True)
@@ -143,8 +162,9 @@ def main():
 
     # Seasonal Heatmap
     month_names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    heatmap_data = filtered_df.dropna(subset=['AQI']).groupby(['Year', 'Month'])['AQI'].mean().reset_index()
+    heatmap_data = filtered_df.dropna(subset=['AQI']).groupby(['Year', 'Month', 'Month_Name'])['AQI'].mean().reset_index()
     if not heatmap_data.empty:
+        # Pivot by internal integer month and explicit index for years
         heatmap_pivot = heatmap_data.pivot(index="Year", columns="Month", values="AQI")
         # Ensure all 12 months exist as columns
         for m in range(1, 13):
@@ -172,6 +192,8 @@ def main():
         )
         r1_col1.plotly_chart(fig_heatmap, use_container_width=True)
         r1_col1.markdown("<div style='text-align:center; color:#a0aec0; font-size:0.9rem;'>Nov-Dec spike caused by crop stubble burning and cold air trapping pollutants near ground level</div>", unsafe_allow_html=True)
+    else:
+        r1_col1.warning(f"No AQI data for {selected_city} to generate Heatmap.")
 
     # Yearly average line chart
     yearly_data = filtered_df.dropna(subset=['AQI']).groupby('Year')['AQI'].mean().reset_index()
@@ -181,10 +203,13 @@ def main():
         fig_line.add_trace(go.Scatter(x=yearly_data['Year_str'], y=yearly_data['AQI'], mode='lines+markers',
                                       line=dict(color='#00f2fe', width=4), marker=dict(size=10, color='#4facfe'), name='AQI'))
         fig_line.update_layout(title=f"Yearly Average AQI - {selected_city}", 
+                               margin=dict(t=50, b=30, l=10, r=10),
                                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'),
                                xaxis=dict(showgrid=False, type='category', title='Year'),
                                yaxis=dict(gridcolor='rgba(255,255,255,0.1)', title='AQI'), title_font=dict(size=20))
         r1_col2.plotly_chart(fig_line, use_container_width=True)
+    else:
+        r1_col2.warning(f"No AQI data for {selected_city} in selected range.")
 
     # Row 2 Charts
     st.markdown("<br>", unsafe_allow_html=True)
@@ -192,8 +217,8 @@ def main():
 
     # City comparison bar chart
     comparison_df = df[(df['City'].isin(selected_comparison_cities)) & (df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1])]
-    if not comparison_df.empty:
-        city_avg = comparison_df.groupby('City')['AQI'].mean().reset_index().sort_values('AQI')
+    if not comparison_df.dropna(subset=['AQI']).empty:
+        city_avg = comparison_df.dropna(subset=['AQI']).groupby('City')['AQI'].mean().reset_index().sort_values('AQI')
         colors = ['#ff4b4b' if city == selected_city else '#2d3748' for city in city_avg['City']]
         fig_bar = go.Figure(go.Bar(
             x=city_avg['AQI'], 
@@ -203,20 +228,26 @@ def main():
             marker_line_width=0, opacity=0.85
         ))
         fig_bar.update_layout(title="City Comparison (Avg AQI)", xaxis_title="Average AQI", yaxis_title="",
+                              margin=dict(t=50, b=30, l=10, r=10),
                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'), 
                               xaxis=dict(gridcolor='rgba(255,255,255,0.1)'), title_font=dict(size=20))
         r2_col1.plotly_chart(fig_bar, use_container_width=True)
+    else:
+        r2_col1.warning("Comparison data unavailable.")
 
     # Selected pollutant monthly area chart
-    monthly_pollutant = filtered_df.groupby('YearMonth')[selected_pollutant].mean().reset_index()
+    monthly_pollutant = filtered_df.dropna(subset=[selected_pollutant]).groupby('YearMonth')[selected_pollutant].mean().reset_index()
     if not monthly_pollutant.empty:
         fig_area = go.Figure()
         fig_area.add_trace(go.Scatter(x=monthly_pollutant['YearMonth'], y=monthly_pollutant[selected_pollutant], fill='tozeroy',
                                       line=dict(color='#f22f46'), fillcolor='rgba(242, 47, 70, 0.3)', name=selected_pollutant))
         fig_area.update_layout(title=f"Monthly Average {selected_pollutant} - {selected_city}",
+                               margin=dict(t=50, b=30, l=10, r=10),
                                paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'),
                                xaxis=dict(showgrid=False), yaxis=dict(gridcolor='rgba(255,255,255,0.1)'), title_font=dict(size=20))
         r2_col2.plotly_chart(fig_area, use_container_width=True)
+    else:
+        r2_col2.warning(f"No {selected_pollutant} records for {selected_city}.")
 
     # AQI Bucket Donut
     st.markdown("<br>", unsafe_allow_html=True)
