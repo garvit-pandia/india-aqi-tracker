@@ -4,3 +4,6 @@ pycache/
 .env
 .DS_Store
 venv/
+.venv/
+push_log.txt
+frontend-skill.md
