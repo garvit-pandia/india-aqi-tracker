@@ -17,13 +17,13 @@ An interactive Streamlit data science dashboard for tracking and analyzing the A
 
 ## 🖼️ Demo Screenshots
 
-| Dashboard Overview | Heatmap & Yearly Trends |
+| Overview & KPI Dashboard | Heatmap & Yearly Charts |
 |---|---|
-| ![Dashboard Overview](demo/dashboard_overview.png) | ![Heatmap & Yearly](demo/heatmap_and_yearly.png) |
+| ![Overview](demo/2026-03-22_23-06.png) | ![Heatmap](demo/2026-03-22_23-07.png) |
 
-| City Comparison & Pollutant Analysis | AQI Distribution & Footer |
-|---|---|
-| ![City Comparison](demo/city_comparison_pollutant.png) | ![Donut Chart](demo/donut_chart_footer.png) |
+| Distribution & Pollutant Analysis |
+|---|
+| ![Distribution](demo/2026-03-22_23-07_1.png) |
 
 ## 📊 What It Shows
 * **Historical Air Quality Trends**: Visualize yearly and daily AQI shifts from 2015 to 2020.
