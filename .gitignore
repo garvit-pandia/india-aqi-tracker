@@ -1,9 +1,35 @@
+# AI Agent / Scaffold files
+Agent.md
+AGENT.md
+agent.md
+*-skill.md
+*_skill.md
+frontend-skill.md
+push_log.txt
+
+# Jupyter exploration notebooks (keep only if intentionally added)
+*.ipynb
+.ipynb_checkpoints/
+
+# Demo screenshots / local assets
+demo/
+screenshots/
+assets/local/
+
+# Python environment
+.venv/
+venv/
 __pycache__/
-pycache/
 *.pyc
 .env
+*.env
+
+# IDE / Editor artifacts
+.antigravity/
+.cursor/
+.vscode/
+*.log
+
+# OS files
 .DS_Store
-venv/
-.venv/
-push_log.txt
-frontend-skill.md
+Thumbs.db
