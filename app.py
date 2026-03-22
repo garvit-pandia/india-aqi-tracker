@@ -162,30 +162,25 @@ def main():
 
     # Seasonal Heatmap
     month_names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    heatmap_data = filtered_df.dropna(subset=['AQI']).groupby(['Year', 'Month', 'Month_Name'])['AQI'].mean().reset_index()
+    heatmap_data = filtered_df.dropna(subset=['AQI'])
     if not heatmap_data.empty:
-        # Pivot by internal integer month and explicit index for years
-        heatmap_pivot = heatmap_data.pivot(index="Year", columns="Month", values="AQI")
-        # Ensure all 12 months exist as columns
-        for m in range(1, 13):
-            if m not in heatmap_pivot.columns:
-                heatmap_pivot[m] = np.nan
-        heatmap_pivot = heatmap_pivot[sorted(heatmap_pivot.columns)]
+        pivot = heatmap_data.pivot_table(
+            index="Year", 
+            columns="Month_Name", 
+            values="AQI",
+            aggfunc="mean"
+        )
+        # Reorder columns so months appear Jan-Dec not alphabetically
+        pivot = pivot.reindex(columns=month_names)
 
-        y_labels = [str(int(y)) for y in heatmap_pivot.index]
-        x_labels = [month_names[m-1] for m in heatmap_pivot.columns]
-
-        fig_heatmap = go.Figure(data=go.Heatmap(
-            z=heatmap_pivot.values,
-            x=x_labels,
-            y=y_labels,
-            colorscale=[[0, "#00B050"], [0.5, "#FFC000"], [1, "#FF0000"]],
-            colorbar=dict(title="Avg AQI"),
-            hoverongaps=False
-        ))
+        fig_heatmap = px.imshow(
+            pivot,
+            labels=dict(x="Month", y="Year", color="Avg AQI"),
+            color_continuous_scale=[[0, "#00B050"], [0.5, "#FFC000"], [1, "#FF0000"]],
+            aspect="auto"
+        )
         fig_heatmap.update_layout(
             title=f"Seasonal AQI Heatmap - {selected_city}",
-            xaxis_title="Month", yaxis_title="Year",
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
             font=dict(color='#e2e8f0', family='Outfit'), title_font=dict(size=20),
             yaxis=dict(type='category')
@@ -217,20 +212,22 @@ def main():
 
     # City comparison bar chart
     comparison_df = df[(df['City'].isin(selected_comparison_cities)) & (df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1])]
-    if not comparison_df.dropna(subset=['AQI']).empty:
+    if not comparison_df.empty:
         city_avg = comparison_df.dropna(subset=['AQI']).groupby('City')['AQI'].mean().reset_index().sort_values('AQI')
-        colors = ['#ff4b4b' if city == selected_city else '#2d3748' for city in city_avg['City']]
-        fig_bar = go.Figure(go.Bar(
-            x=city_avg['AQI'], 
-            y=city_avg['City'], 
-            orientation='h', 
-            marker_color=colors,
-            marker_line_width=0, opacity=0.85
-        ))
-        fig_bar.update_layout(title="City Comparison (Avg AQI)", xaxis_title="Average AQI", yaxis_title="",
-                              margin=dict(t=50, b=30, l=10, r=10),
+        # We assign color to highlight the selected city
+        city_avg['Color'] = city_avg['City'].apply(lambda c: '#ff4b4b' if c == selected_city else '#2d3748')
+        
+        fig_bar = px.bar(
+            city_avg, 
+            x='AQI', 
+            y='City', 
+            orientation='h',
+            title="City Comparison (Avg AQI)"
+        )
+        fig_bar.update_traces(marker_color=city_avg['Color'])
+        fig_bar.update_layout(margin=dict(t=50, b=30, l=10, r=10),
                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'), 
-                              xaxis=dict(gridcolor='rgba(255,255,255,0.1)'), title_font=dict(size=20))
+                              xaxis=dict(gridcolor='rgba(255,255,255,0.1)', title='Average AQI'), yaxis=dict(title=''), title_font=dict(size=20))
         r2_col1.plotly_chart(fig_bar, use_container_width=True)
     else:
         r2_col1.warning("Comparison data unavailable.")
@@ -252,18 +249,19 @@ def main():
     # AQI Bucket Donut
     st.markdown("<br>", unsafe_allow_html=True)
     r3_col1, r3_col2 = st.columns(2)
-    bucket_counts = filtered_df['AQI_Bucket'].value_counts().reset_index()
-    bucket_counts.columns = ['Bucket', 'Count']
+    dist = filtered_df['AQI_Bucket'].value_counts().reset_index()
+    dist.columns = ['Category', 'Days']
     color_map = {
-        'Good': '#00B050',
-        'Satisfactory': '#92D050',
-        'Moderate': '#FFC000',
-        'Poor': '#FF7000',
-        'Very Poor': '#FF0000',
-        'Severe': '#C00000'
+        'Good': '#2ecc71',
+        'Satisfactory': '#a8d08d',
+        'Moderate': '#f1c40f',
+        'Poor': '#e67e22',
+        'Very Poor': '#e74c3c',
+        'Severe': '#c0392b',
+        'N/A': '#95a5a6'
     }
-    if not bucket_counts.empty:
-        fig_donut = px.pie(bucket_counts, values='Count', names='Bucket', hole=0.5, title=f"AQI Days Distribution - {selected_city}", color='Bucket', color_discrete_map=color_map)
+    if not dist.empty:
+        fig_donut = px.pie(dist, values='Days', names='Category', hole=0.5, title=f"AQI Days Distribution - {selected_city}", color='Category', color_discrete_map=color_map)
         fig_donut.update_layout(paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'), title_font=dict(size=20),
                                 annotations=[dict(text='AQI', x=0.5, y=0.5, font_size=20, showarrow=False, font_color='#e2e8f0')])
         fig_donut.update_traces(hoverinfo='label+percent', textinfo='value', textfont_size=14, marker=dict(line=dict(color='#16213e', width=2)))
