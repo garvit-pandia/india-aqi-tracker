@@ -1,15 +1,3 @@
----
-title: India AQI Tracker
-emoji: 🌫️
-colorFrom: green
-colorTo: red
-sdk: streamlit
-sdk_version: 1.32.0
-python_version: "3.10"
-app_file: app.py
-pinned: false
----
-
 # India AQI Tracker
 > An interactive data science dashboard for tracking and analyzing the Air Quality Index (AQI) across Indian cities.
 
