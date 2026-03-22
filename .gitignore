@@ -11,11 +11,6 @@ push_log.txt
 *.ipynb
 .ipynb_checkpoints/
 
-# Demo screenshots / local assets
-demo/
-screenshots/
-assets/local/
-
 # Python environment
 .venv/
 venv/
