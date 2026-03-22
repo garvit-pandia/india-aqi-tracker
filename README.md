@@ -1,6 +1,9 @@
 # India AQI Tracker
 > An interactive data science dashboard for tracking and analyzing the Air Quality Index (AQI) across Indian cities.
 
+https://github.com/garvit-pandia/india-aqi-tracker/blob/main/2026-03-22_23-07.png
+
+
 ## Features
 - **Historical Analysis:** Visualize yearly and daily AQI shifts from 2015 to 2020.
 - **City Comparisons:** Instantly compare overall AQI averages and historical values between multiple Indian cities.
