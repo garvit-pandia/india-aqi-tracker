@@ -122,7 +122,7 @@ def main():
     # Filter Controls
     cities = sorted(df['City'].dropna().unique())
     default_city = "Udaipur" if "Udaipur" in cities else (cities[0] if len(cities)>0 else "")
-    selected_city = st.sidebar.selectbox("Select City", cities, index=cities.index(default_city) if default_city in cities else 0)
+    selected_city = st.sidebar.selectbox("Select City", cities, index=cities.index(default_city) if default_city in cities else 0) # type: ignore
     
     year_range = st.sidebar.slider("Select Year Range", 2015, 2020, (2015, 2020))
     
@@ -182,8 +182,8 @@ def main():
         fig_heatmap.update_layout(
             title=f"Seasonal AQI Heatmap - {selected_city}",
             paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#e2e8f0', family='Outfit'), title_font=dict(size=20),
-            yaxis=dict(type='category')
+            font={'color': '#e2e8f0', 'family': 'Outfit'}, title_font={'size': 20},
+            yaxis={'type': 'category'}
         )
         r1_col1.plotly_chart(fig_heatmap, use_container_width=True)
         r1_col1.markdown("<div style='text-align:center; color:#a0aec0; font-size:0.9rem;'>Nov-Dec spike caused by crop stubble burning and cold air trapping pollutants near ground level</div>", unsafe_allow_html=True)
@@ -196,12 +196,12 @@ def main():
         yearly_data['Year_str'] = yearly_data['Year'].astype(str)
         fig_line = go.Figure()
         fig_line.add_trace(go.Scatter(x=yearly_data['Year_str'], y=yearly_data['AQI'], mode='lines+markers',
-                                      line=dict(color='#00f2fe', width=4), marker=dict(size=10, color='#4facfe'), name='AQI'))
+                                      line={'color': '#00f2fe', 'width': 4}, marker={'size': 10, 'color': '#4facfe'}, name='AQI'))
         fig_line.update_layout(title=f"Yearly Average AQI - {selected_city}", 
-                               margin=dict(t=50, b=30, l=10, r=10),
-                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'),
-                               xaxis=dict(showgrid=False, type='category', title='Year'),
-                               yaxis=dict(gridcolor='rgba(255,255,255,0.1)', title='AQI'), title_font=dict(size=20))
+                               margin={'t': 50, 'b': 30, 'l': 10, 'r': 10},
+                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font={'color': '#e2e8f0', 'family': 'Outfit'},
+                               xaxis={'showgrid': False, 'type': 'category', 'title': 'Year'},
+                               yaxis={'gridcolor': 'rgba(255,255,255,0.1)', 'title': 'AQI'}, title_font={'size': 20})
         r1_col2.plotly_chart(fig_line, use_container_width=True)
     else:
         r1_col2.warning(f"No AQI data for {selected_city} in selected range.")
@@ -225,9 +225,9 @@ def main():
             title="City Comparison (Avg AQI)"
         )
         fig_bar.update_traces(marker_color=city_avg['Color'])
-        fig_bar.update_layout(margin=dict(t=50, b=30, l=10, r=10),
-                              paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'), 
-                              xaxis=dict(gridcolor='rgba(255,255,255,0.1)', title='Average AQI'), yaxis=dict(title=''), title_font=dict(size=20))
+        fig_bar.update_layout(margin={'t': 50, 'b': 30, 'l': 10, 'r': 10},
+                              paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font={'color': '#e2e8f0', 'family': 'Outfit'}, 
+                              xaxis={'gridcolor': 'rgba(255,255,255,0.1)', 'title': 'Average AQI'}, yaxis={'title': ''}, title_font={'size': 20})
         r2_col1.plotly_chart(fig_bar, use_container_width=True)
     else:
         r2_col1.warning("Comparison data unavailable.")
@@ -237,11 +237,11 @@ def main():
     if not monthly_pollutant.empty:
         fig_area = go.Figure()
         fig_area.add_trace(go.Scatter(x=monthly_pollutant['YearMonth'], y=monthly_pollutant[selected_pollutant], fill='tozeroy',
-                                      line=dict(color='#f22f46'), fillcolor='rgba(242, 47, 70, 0.3)', name=selected_pollutant))
+                                      line={'color': '#f22f46'}, fillcolor='rgba(242, 47, 70, 0.3)', name=selected_pollutant))
         fig_area.update_layout(title=f"Monthly Average {selected_pollutant} - {selected_city}",
-                               margin=dict(t=50, b=30, l=10, r=10),
-                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'),
-                               xaxis=dict(showgrid=False), yaxis=dict(gridcolor='rgba(255,255,255,0.1)'), title_font=dict(size=20))
+                               margin={'t': 50, 'b': 30, 'l': 10, 'r': 10},
+                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font={'color': '#e2e8f0', 'family': 'Outfit'},
+                               xaxis={'showgrid': False}, yaxis={'gridcolor': 'rgba(255,255,255,0.1)'}, title_font={'size': 20})
         r2_col2.plotly_chart(fig_area, use_container_width=True)
     else:
         r2_col2.warning(f"No {selected_pollutant} records for {selected_city}.")
@@ -262,9 +262,9 @@ def main():
     }
     if not dist.empty:
         fig_donut = px.pie(dist, values='Days', names='Category', hole=0.5, title=f"AQI Days Distribution - {selected_city}", color='Category', color_discrete_map=color_map)
-        fig_donut.update_layout(paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0', family='Outfit'), title_font=dict(size=20),
-                                annotations=[dict(text='AQI', x=0.5, y=0.5, font_size=20, showarrow=False, font_color='#e2e8f0')])
-        fig_donut.update_traces(hoverinfo='label+percent', textinfo='value', textfont_size=14, marker=dict(line=dict(color='#16213e', width=2)))
+        fig_donut.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': '#e2e8f0', 'family': 'Outfit'}, title_font={'size': 20},
+                                annotations=[{'text': 'AQI', 'x': 0.5, 'y': 0.5, 'font_size': 20, 'showarrow': False, 'font_color': '#e2e8f0'}])
+        fig_donut.update_traces(hoverinfo='label+percent', textinfo='value', textfont_size=14, marker={'line': {'color': '#16213e', 'width': 2}})
         r3_col1.plotly_chart(fig_donut, use_container_width=True)
 
     # Footer
