@@ -1,16 +1,20 @@
+---
+title: India AQI Tracker
+emoji: 🌫️
+colorFrom: green
+colorTo: red
+sdk: streamlit
+sdk_version: 1.32.0
+python_version: "3.10"
+app_file: app.py
+pinned: false
+---
+
 # India AQI Tracker
 > An interactive data science dashboard for tracking and analyzing the Air Quality Index (AQI) across Indian cities.
 
-https://github.com/garvit-pandia/india-aqi-tracker/blob/main/2026-03-22_23-07.png
-
-
-## Features
-- **Historical Analysis:** Visualize yearly and daily AQI shifts from 2015 to 2020.
-- **City Comparisons:** Instantly compare overall AQI averages and historical values between multiple Indian cities.
-- **Seasonal Heatmaps:** Identify the most severe periods of the year for pollution intensity across specific location domains.
-- **Categorical Breakdown:** Analyze the distribution of poor vs good air quality days utilizing distinct visualizations.
-
 ## Dashboard Screenshots
+
 | Overview & KPI Dashboard | Heatmap & Yearly Charts |
 |---|---|
 | ![Overview](media/2026-03-22_23-06.png) | ![Heatmap](media/2026-03-22_23-07.png) |
@@ -18,6 +22,12 @@ https://github.com/garvit-pandia/india-aqi-tracker/blob/main/2026-03-22_23-07.pn
 | Distribution & Pollutant Analysis |
 |---|
 | ![Distribution](media/2026-03-22_23-07_1.png) |
+
+## Features
+- **Historical Analysis:** Visualize yearly and daily AQI shifts from 2015 to 2020.
+- **City Comparisons:** Instantly compare overall AQI averages and historical values between multiple Indian cities.
+- **Seasonal Heatmaps:** Identify the most severe periods of the year for pollution intensity across specific location domains.
+- **Categorical Breakdown:** Analyze the distribution of poor vs good air quality days utilizing distinct visualizations.
 
 ## Tech Stack
 - Python
