@@ -10,6 +10,15 @@ https://github.com/garvit-pandia/india-aqi-tracker/blob/main/2026-03-22_23-07.pn
 - **Seasonal Heatmaps:** Identify the most severe periods of the year for pollution intensity across specific location domains.
 - **Categorical Breakdown:** Analyze the distribution of poor vs good air quality days utilizing distinct visualizations.
 
+## Dashboard Screenshots
+| Overview & KPI Dashboard | Heatmap & Yearly Charts |
+|---|---|
+| ![Overview](media/2026-03-22_23-06.png) | ![Heatmap](media/2026-03-22_23-07.png) |
+
+| Distribution & Pollutant Analysis |
+|---|
+| ![Distribution](media/2026-03-22_23-07_1.png) |
+
 ## Tech Stack
 - Python
 - Pandas
