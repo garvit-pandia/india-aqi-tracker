@@ -14,6 +14,11 @@ pinned: false
 > An interactive data science dashboard for tracking and analyzing the Air Quality Index (AQI) across Indian cities.
 
 ## Dashboard Screenshots
+## Demo
+
+![India AQI Tracker Demo](https://media.githubusercontent.com/media/garvit-pandia/india-aqi-tracker/main/media/Recording%202026-03-22%20234619.gif)
+
+> Interactive city-wise AQI dashboard with seasonal heatmaps and yearly trend analysis
 
 | Overview & KPI Dashboard | Heatmap & Yearly Charts |
 |---|---|
