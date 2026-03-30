@@ -26,4 +26,5 @@ jobs:
           git config user.name "GitHub Actions"
           git add .
           git commit -m "Deploy: ${{ github.sha }}"
+          git branch -m master main
           git push -f https://garvitpandia28:$HF_TOKEN@huggingface.co/spaces/garvitpandia28/india-aqi-tracker-live main
