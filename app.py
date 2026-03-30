@@ -174,7 +174,9 @@ def main():
         pivot = pivot.reindex(columns=month_names)
 
         fig_heatmap = px.imshow(
-            pivot,
+            pivot.values,
+            x=pivot.columns.tolist(),
+            y=pivot.index.tolist(),
             labels=dict(x="Month", y="Year", color="Avg AQI"),
             color_continuous_scale=[[0, "#00B050"], [0.5, "#FFC000"], [1, "#FF0000"]],
             aspect="auto"
@@ -195,7 +197,7 @@ def main():
     if not yearly_data.empty:
         yearly_data['Year_str'] = yearly_data['Year'].astype(str)
         fig_line = go.Figure()
-        fig_line.add_trace(go.Scatter(x=yearly_data['Year_str'], y=yearly_data['AQI'], mode='lines+markers',
+        fig_line.add_trace(go.Scatter(x=yearly_data['Year_str'].tolist(), y=yearly_data['AQI'].tolist(), mode='lines+markers',
                                       line={'color': '#00f2fe', 'width': 4}, marker={'size': 10, 'color': '#4facfe'}, name='AQI'))
         fig_line.update_layout(title=f"Yearly Average AQI - {selected_city}", 
                                margin={'t': 50, 'b': 30, 'l': 10, 'r': 10},
@@ -218,13 +220,12 @@ def main():
         city_avg['Color'] = city_avg['City'].apply(lambda c: '#ff4b4b' if c == selected_city else '#2d3748')
         
         fig_bar = px.bar(
-            city_avg, 
-            x='AQI', 
-            y='City', 
+            x=city_avg['AQI'].tolist(), 
+            y=city_avg['City'].tolist(), 
             orientation='h',
             title="City Comparison (Avg AQI)"
         )
-        fig_bar.update_traces(marker_color=city_avg['Color'])
+        fig_bar.update_traces(marker_color=city_avg['Color'].tolist())
         fig_bar.update_layout(margin={'t': 50, 'b': 30, 'l': 10, 'r': 10},
                               paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font={'color': '#e2e8f0', 'family': 'Outfit'}, 
                               xaxis={'gridcolor': 'rgba(255,255,255,0.1)', 'title': 'Average AQI'}, yaxis={'title': ''}, title_font={'size': 20})
@@ -236,7 +237,7 @@ def main():
     monthly_pollutant = filtered_df.dropna(subset=[selected_pollutant]).groupby('YearMonth')[selected_pollutant].mean().reset_index()
     if not monthly_pollutant.empty:
         fig_area = go.Figure()
-        fig_area.add_trace(go.Scatter(x=monthly_pollutant['YearMonth'], y=monthly_pollutant[selected_pollutant], fill='tozeroy',
+        fig_area.add_trace(go.Scatter(x=monthly_pollutant['YearMonth'].astype(str).tolist(), y=monthly_pollutant[selected_pollutant].tolist(), fill='tozeroy',
                                       line={'color': '#f22f46'}, fillcolor='rgba(242, 47, 70, 0.3)', name=selected_pollutant))
         fig_area.update_layout(title=f"Monthly Average {selected_pollutant} - {selected_city}",
                                margin={'t': 50, 'b': 30, 'l': 10, 'r': 10},
@@ -249,8 +250,7 @@ def main():
     # AQI Bucket Donut
     st.markdown("<br>", unsafe_allow_html=True)
     r3_col1, r3_col2 = st.columns(2)
-    dist = filtered_df['AQI_Bucket'].value_counts().reset_index()
-    dist.columns = ['Category', 'Days']
+    dist = filtered_df['AQI_Bucket'].value_counts().rename_axis('Category').reset_index(name='Days')
     color_map = {
         'Good': '#2ecc71',
         'Satisfactory': '#a8d08d',
@@ -261,7 +261,7 @@ def main():
         'N/A': '#95a5a6'
     }
     if not dist.empty:
-        fig_donut = px.pie(dist, values='Days', names='Category', hole=0.5, title=f"AQI Days Distribution - {selected_city}", color='Category', color_discrete_map=color_map)
+        fig_donut = px.pie(values=dist['Days'].tolist(), names=dist['Category'].tolist(), hole=0.5, title=f"AQI Days Distribution - {selected_city}", color=dist['Category'].tolist(), color_discrete_map=color_map)
         fig_donut.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': '#e2e8f0', 'family': 'Outfit'}, title_font={'size': 20},
                                 annotations=[{'text': 'AQI', 'x': 0.5, 'y': 0.5, 'font_size': 20, 'showarrow': False, 'font_color': '#e2e8f0'}])
         fig_donut.update_traces(hoverinfo='label+percent', textinfo='value', textfont_size=14, marker={'line': {'color': '#16213e', 'width': 2}})
