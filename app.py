@@ -176,7 +176,7 @@ def main():
         fig_heatmap = px.imshow(
             pivot.values,
             x=pivot.columns.tolist(),
-            y=pivot.index.tolist(),
+            y=pivot.index.astype(str).tolist(),
             labels=dict(x="Month", y="Year", color="Avg AQI"),
             color_continuous_scale=[[0, "#00B050"], [0.5, "#FFC000"], [1, "#FF0000"]],
             aspect="auto"
