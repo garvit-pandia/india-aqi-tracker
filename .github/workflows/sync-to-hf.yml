@@ -19,8 +19,3 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git push -f https://garvitpandia28:$HF_TOKEN@huggingface.co/spaces/garvitpandia28/india-aqi-tracker-live main
-
-
-Same steps but on `https://github.com/garvit-pandia/rag-resume-analyzer`, and the push URL changes to:
-```
-https://garvitpandia28:$HF_TOKEN@huggingface.co/spaces/garvitpandia28/rag-resume-analyzer main
