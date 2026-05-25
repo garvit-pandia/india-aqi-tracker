@@ -21,7 +21,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           mkdir hf-deploy
-          cp app.py requirements.txt city_day.csv hf-deploy/
+          cp -r app.py requirements.txt city_day.csv src/ hf-deploy/
           cp README.md hf-deploy/ 2>/dev/null || true
           cd hf-deploy
           git init
