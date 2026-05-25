@@ -6,6 +6,9 @@ agent.md
 *_skill.md
 frontend-skill.md
 push_log.txt
+handout.md
+improvement_suggestion.md
+tasks/
 
 # Jupyter exploration notebooks (keep only if intentionally added)
 *.ipynb
