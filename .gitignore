@@ -19,6 +19,14 @@ __pycache__/
 .env
 *.env
 
+# Tests & coverage
+.coverage
+.pytest_cache/
+
+# Streamlit temp
+streamlit_output.txt
+streamlit_error.txt
+
 # IDE / Editor artifacts
 .antigravity/
 .cursor/
