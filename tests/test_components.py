@@ -13,7 +13,9 @@ class TestMetricCards:
         render_metric_cards(loaded_df)
 
     def test_renders_empty_dataframe(self):
-        df = pd.DataFrame(columns=["City", "Date", "AQI", "Year", "Month", "Month_Name", "AQI_Bucket"])
+        df = pd.DataFrame(
+            columns=["City", "Date", "AQI", "Year", "Month", "Month_Name", "AQI_Bucket"]
+        )
         render_metric_cards(df)
 
 

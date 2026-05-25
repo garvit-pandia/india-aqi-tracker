@@ -7,10 +7,7 @@ from src.constants import LINE_COLOR, MARKER_COLOR
 
 def render_yearly_trend(filtered_df: pd.DataFrame, selected_city: str) -> None:
     yearly_data = (
-        filtered_df.dropna(subset=["AQI"])
-        .groupby("Year")["AQI"]
-        .mean()
-        .reset_index()
+        filtered_df.dropna(subset=["AQI"]).groupby("Year")["AQI"].mean().reset_index()
     )
 
     if yearly_data.empty:

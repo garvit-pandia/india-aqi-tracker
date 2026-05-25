@@ -21,7 +21,14 @@ def sample_df() -> pd.DataFrame:
         "SO2": [15.0, 18.0, 8.0, 9.0, 5.0, 6.0],
         "O3": [40.0, 45.0, 25.0, 30.0, 35.0, 40.0],
         "AQI": [320, 380, 150, 165, 75, 90],
-        "AQI_Bucket": [None, None, "Moderate", "Moderate", "Satisfactory", "Satisfactory"],
+        "AQI_Bucket": [
+            None,
+            None,
+            "Moderate",
+            "Moderate",
+            "Satisfactory",
+            "Satisfactory",
+        ],
     }
     return pd.DataFrame(data)
 

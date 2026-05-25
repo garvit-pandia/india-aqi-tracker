@@ -8,7 +8,20 @@ DEFAULT_COMPARISON_CITIES = ["Delhi", "Bengaluru"]
 
 POLLUTANTS = ["PM2.5", "PM10", "NO2", "CO", "SO2", "O3"]
 
-MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+]
 
 AQI_BUCKET_COLORS = {
     "Good": "#2ecc71",

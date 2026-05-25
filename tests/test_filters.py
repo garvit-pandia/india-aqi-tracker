@@ -9,5 +9,10 @@ class TestRenderSidebar:
         assert "selected_comparison_cities" in result
         assert "selected_pollutant" in result
         assert result["selected_pollutant"] in [
-            "PM2.5", "PM10", "NO2", "CO", "SO2", "O3",
+            "PM2.5",
+            "PM10",
+            "NO2",
+            "CO",
+            "SO2",
+            "O3",
         ]

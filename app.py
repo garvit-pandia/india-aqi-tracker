@@ -31,7 +31,9 @@ def main():
     selected_comparison_cities = filters["selected_comparison_cities"]
     selected_pollutant = filters["selected_pollutant"]
 
-    st.markdown("<div class='title-glow'>India AQI Tracker</div>", unsafe_allow_html=True)
+    st.markdown(
+        "<div class='title-glow'>India AQI Tracker</div>", unsafe_allow_html=True
+    )
 
     filtered_df = df[
         (df["City"] == selected_city)
@@ -54,7 +56,9 @@ def main():
         r2_col1, r2_col2 = st.columns(2)
 
         with r2_col1:
-            render_city_comparison(df, selected_comparison_cities, year_range, selected_city)
+            render_city_comparison(
+                df, selected_comparison_cities, year_range, selected_city
+            )
         with r2_col2:
             render_pollutant_area(filtered_df, selected_pollutant, selected_city)
 
